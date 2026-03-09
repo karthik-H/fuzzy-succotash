@@ -258,7 +258,8 @@
           },
           "type": "edge"
         }
-      ]
+      ],
+      "test_path": ".codevalid/tests/task_5917264832_20260309131657/ui_app_handle_create_task.ts"
     },
     {
       "implementation_id": "api_create_task_function",
@@ -640,7 +641,8 @@
           },
           "type": "edge"
         }
-      ]
+      ],
+      "test_path": ".codevalid/tests/task_5917264832_20260309131657/api_create_task_function.ts"
     },
     {
       "implementation_id": "backend_add_task_function",
@@ -914,7 +916,8 @@
           },
           "type": "edge"
         }
-      ]
+      ],
+      "test_path": ".codevalid/tests/task_5917264832_20260309131657/backend_add_task_function.py"
     }
   ],
   "component": [
@@ -1113,7 +1116,8 @@
           },
           "type": "edge"
         }
-      ]
+      ],
+      "test_path": ".codevalid/tests/task_5917264832_20260309131657/ui_task_form_add_new_task.ts"
     }
   ],
   "endpoint": [
@@ -1465,7 +1469,8 @@
           },
           "type": "negative"
         }
-      ]
+      ],
+      "test_path": ".codevalid/tests/task_5917264832_20260309131657/backend_endpoint_create_task.py"
     }
   ]
 }
