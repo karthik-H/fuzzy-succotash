@@ -2,25 +2,25 @@
   "task_5917264832_20260309131657": {
     "implementation": [
       {
-        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, due date, and passes data to the parent via onSubmit. Currently does not include a user name field.",
+        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, and due date. It still does not include a user name field.",
         "change_type": "unchanged",
         "file_path": "frontend/src/components/TaskForm.tsx",
         "id": "ui_task_form_add_new_task",
         "name": "TaskForm",
-        "pseudo_code": "Render a form with fields:\n  - Title (required)\n  - Description\n  - Priority (Low/Medium/High)\n  - Due Date\nOn submit:\n  - Validate required fields\n  - Call onSubmit with task data",
+        "pseudo_code": "Render a form with fields:\n  - Title (required)\n  - Description\n  - Priority (Low / Medium / High)\n  - Due Date\nOn submit:\n  - Validate required fields\n  - Call onSubmit with task data",
         "type": "component"
       },
       {
-        "How_is_it_connected_to_implementation": "Handles submission from TaskForm, invokes API to create a new task, reloads the task list. No user name passed because form does not provide it.",
+        "How_is_it_connected_to_implementation": "Handles submission from TaskForm and calls the backend API to create a task. Because the form does not collect a user name, none is included here.",
         "change_type": "unchanged",
         "file_path": "frontend/src/App.tsx",
         "id": "ui_app_handle_create_task",
         "name": "handleCreateTask",
-        "pseudo_code": "When TaskForm submits:\n  - Call api.createTask with task data\n  - Reload tasks from backend\n  - Close the form",
+        "pseudo_code": "When TaskForm submits:\n  - Call api.createTask with task data (no user name)\n  - Reload tasks from backend\n  - Close the form",
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "Sends POST request to backend /tasks endpoint with task data (title, description, priority, due date, completed). Does not pass user name.",
+        "How_is_it_connected_to_implementation": "Makes POST request to /tasks with title, description, priority, due date, and completed flag. User name is not included.",
         "change_type": "unchanged",
         "file_path": "frontend/src/api.ts",
         "id": "api_create_task_function",
@@ -29,21 +29,21 @@
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "FastAPI endpoint for POST /tasks, receives task data and calls database.add_task. No user name field expected or validated.",
+        "How_is_it_connected_to_implementation": "FastAPI POST /tasks endpoint that receives task fields and passes them to database.add_task. User name is not included or validated.",
         "change_type": "unchanged",
         "file_path": "backend/main.py",
         "id": "backend_endpoint_create_task",
         "name": "create_task",
-        "pseudo_code": "On POST /tasks:\n  - Receive TaskCreate data\n  - Call database.add_task with data\n  - Return created Task",
+        "pseudo_code": "On POST /tasks:\n  - Receive TaskCreate payload\n  - Call database.add_task with provided fields\n  - Return created Task",
         "type": "endpoint"
       },
       {
-        "How_is_it_connected_to_implementation": "Creates a new Task object with provided fields, assigns unique ID, saves to storage. User name is not stored.",
+        "How_is_it_connected_to_implementation": "Creates and persists a new task record. User name is not expected or stored.",
         "change_type": "unchanged",
         "file_path": "backend/database.py",
         "id": "backend_add_task_function",
         "name": "add_task",
-        "pseudo_code": "Get current tasks\nCreate new Task with unique ID and provided fields\nAppend to task list\nSave updated list\nReturn new Task",
+        "pseudo_code": "Read current tasks\nCreate new Task with unique ID and provided fields\nAppend new task to list\nSave list\nReturn new Task",
         "type": "function"
       }
     ],

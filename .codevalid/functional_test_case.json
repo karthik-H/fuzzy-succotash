@@ -309,7 +309,9 @@
               }
             },
             "then": {
-              "response_body_json": "Unspecified behavior (implementation blocking)"
+              "response_body_json": {
+                "error": "Missing required field: title"
+              }
             },
             "when": "api.createTask is called with title missing."
           },
@@ -330,7 +332,9 @@
               }
             },
             "then": {
-              "response_body_json": "Unspecified behavior (implementation blocking)"
+              "response_body_json": {
+                "error": "Missing required field: description"
+              }
             },
             "when": "api.createTask is called with description missing."
           },
@@ -351,7 +355,9 @@
               }
             },
             "then": {
-              "response_body_json": "Unspecified behavior (implementation blocking)"
+              "response_body_json": {
+                "error": "Missing required field: priority"
+              }
             },
             "when": "api.createTask is called with priority missing."
           },
@@ -372,7 +378,9 @@
               }
             },
             "then": {
-              "response_body_json": "Unspecified behavior (implementation blocking)"
+              "response_body_json": {
+                "error": "Missing required field: due_date"
+              }
             },
             "when": "api.createTask is called with due date missing."
           },
@@ -393,7 +401,9 @@
               }
             },
             "then": {
-              "response_body_json": "Unspecified behavior (implementation blocking)"
+              "response_body_json": {
+                "error": "Missing required field: user_name"
+              }
             },
             "when": "api.createTask is called with user name missing."
           },
@@ -416,13 +426,7 @@
             },
             "then": {
               "response_body_json": {
-                "completed": false,
-                "description": "",
-                "due_date": "",
-                "id": "generated_task_id",
-                "priority": "",
-                "title": "",
-                "user_name": ""
+                "error": "Required fields cannot be empty"
               }
             },
             "when": "api.createTask is called with empty strings for each field."
@@ -476,13 +480,7 @@
             },
             "then": {
               "response_body_json": {
-                "completed": false,
-                "description": "Complete the financial report by EOD",
-                "due_date": "July 10, 2024",
-                "id": "generated_task_id",
-                "priority": "high",
-                "title": "Finish report",
-                "user_name": "johndoe"
+                "error": "Invalid due_date format"
               }
             },
             "when": "api.createTask is called with due date in invalid format."
@@ -640,9 +638,133 @@
             "when": "api.createTask is called with extra fields."
           },
           "type": "edge"
+        },
+        {
+          "description": "Verify error when all required fields are missing.",
+          "id": "Create_Task_With_Missing_All_Fields",
+          "implementation_id": "api_create_task_function",
+          "name": "Create Task With Missing All Fields",
+          "test_setup": {
+            "given": {
+              "request_body_json": {}
+            },
+            "then": {
+              "response_body_json": {
+                "error": "Missing required fields: title, description, priority, due_date, user_name"
+              }
+            },
+            "when": "api.createTask is called with no fields."
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Verify error when priority is not a string.",
+          "id": "Create_Task_With_Invalid_Priority_Type",
+          "implementation_id": "api_create_task_function",
+          "name": "Create Task With Invalid Priority Type",
+          "test_setup": {
+            "given": {
+              "request_body_json": {
+                "description": "Task",
+                "due_date": "2024-07-10",
+                "priority": 123,
+                "title": "Title",
+                "user_name": "user"
+              }
+            },
+            "then": {
+              "response_body_json": {
+                "error": "Invalid data type: priority"
+              }
+            },
+            "when": "api.createTask is called with non-string priority."
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Verify error when completed is not boolean.",
+          "id": "Create_Task_With_Invalid_Completed_Type",
+          "implementation_id": "api_create_task_function",
+          "name": "Create Task With Invalid Completed Type",
+          "test_setup": {
+            "given": {
+              "request_body_json": {
+                "completed": "yes",
+                "description": "Task",
+                "due_date": "2024-07-10",
+                "priority": "high",
+                "title": "Title",
+                "user_name": "user"
+              }
+            },
+            "then": {
+              "response_body_json": {
+                "error": "Invalid data type: completed"
+              }
+            },
+            "when": "api.createTask is called with invalid completed type."
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Verify behavior when due date is in the past.",
+          "id": "Create_Task_With_Past_Due_Date",
+          "implementation_id": "api_create_task_function",
+          "name": "Create Task With Past Due Date",
+          "test_setup": {
+            "given": {
+              "request_body_json": {
+                "description": "Task",
+                "due_date": "2020-01-01",
+                "priority": "high",
+                "title": "Title",
+                "user_name": "user"
+              }
+            },
+            "then": {
+              "response_body_json": {
+                "completed": false,
+                "description": "Task",
+                "due_date": "2020-01-01",
+                "id": "generated_task_id",
+                "priority": "high",
+                "title": "Title",
+                "user_name": "user"
+              }
+            },
+            "when": "api.createTask is called with past due date."
+          },
+          "type": "edge"
+        },
+        {
+          "description": "Verify function throws error on backend 400 validation failure.",
+          "id": "Create_Task_Backend_Returns_Validation_Error",
+          "implementation_id": "api_create_task_function",
+          "name": "Create Task Backend Returns Validation Error",
+          "test_setup": {
+            "given": {
+              "backend_response": {
+                "body": {
+                  "error": "Invalid field"
+                },
+                "status": 400
+              },
+              "request_body_json": {
+                "description": "Task",
+                "due_date": "2024-07-10",
+                "priority": "high",
+                "title": "Title",
+                "user_name": "user"
+              }
+            },
+            "then": {
+              "throws": "Error"
+            },
+            "when": "api.createTask is called and backend returns 400."
+          },
+          "type": "negative"
         }
-      ],
-      "test_path": ".codevalid/tests/task_5917264832_20260309131657/api_create_task_function.ts"
+      ]
     },
     {
       "implementation_id": "backend_add_task_function",
