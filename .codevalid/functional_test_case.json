@@ -970,7 +970,8 @@
             "then": "onSubmit is called with description as an empty string",
             "when": "User fills all fields except description and submits the form"
           },
-          "type": "edge"
+          "type": "edge",
+          "update_reason": "Description is actually required per requirement; expected behavior must change."
         },
         {
           "description": "Submitting the form without selecting a priority should not call onSubmit (priority is required).",
@@ -1105,19 +1106,114 @@
           "type": "negative"
         },
         {
-          "description": "If description is optional, submitting with description omitted but all other fields filled should succeed.",
-          "id": "tc_description_optional_behavior",
+          "description": "Submitting an invalid due date format should prevent submission.",
+          "id": "reject_invalid_date_format",
           "implementation_id": "ui_task_form_add_new_task",
-          "name": "description_optional_all_other_required",
+          "name": "reject_invalid_date_format",
           "test_setup": {
             "given": "TaskForm is rendered",
-            "then": "onSubmit is called with description as an empty string",
-            "when": "User leaves description blank but fills all other fields and submits"
+            "then": "onSubmit is not called",
+            "when": "User enters an invalid date format"
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Priority field should default to no selection.",
+          "id": "priority_default_state",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "priority_default_state",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "Priority dropdown shows no preselected value",
+            "when": "Component loads"
           },
           "type": "edge"
+        },
+        {
+          "description": "Whitespace-only user name should be treated as empty.",
+          "id": "user_name_whitespace_rejected",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "user_name_whitespace_rejected",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is not called",
+            "when": "User enters only spaces in the user name field and submits"
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Whitespace-only title should not allow submission.",
+          "id": "title_whitespace_rejected",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "title_whitespace_rejected",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is not called",
+            "when": "User enters only spaces in the title field and submits"
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Submitting with the shortest valid title and description should succeed.",
+          "id": "submit_with_minimal_valid_values",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "submit_with_minimal_valid_values",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is called with provided minimal values",
+            "when": "User enters title='A', description='A', and other fields valid"
+          },
+          "type": "edge"
+        },
+        {
+          "description": "Confirm whether due dates in the past are allowed; default behavior is to accept them.",
+          "id": "date_in_past_allowed",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "date_in_past_allowed",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is called with the past date",
+            "when": "User enters a due date in the past"
+          },
+          "type": "edge"
+        },
+        {
+          "description": "Ensure extremely future due dates are accepted.",
+          "id": "date_in_far_future",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "date_in_far_future",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is called",
+            "when": "User enters a due date far in the future (e.g., year 2100)"
+          },
+          "type": "edge"
+        },
+        {
+          "description": "Submit button should not trigger onSubmit when form is invalid.",
+          "id": "submit_while_form_invalid",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "submit_while_form_invalid",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is not called",
+            "when": "User clicks submit with any required field missing"
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Form should submit when pressing Enter in any input field.",
+          "id": "keyboard_submission",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "keyboard_submission",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is called with valid data",
+            "when": "User presses Enter in an input field"
+          },
+          "type": "positive"
         }
-      ],
-      "test_path": ".codevalid/tests/task_5917264832_20260309131657/ui_task_form_add_new_task.ts"
+      ]
     }
   ],
   "endpoint": [
@@ -1309,19 +1405,15 @@
           "request_method": "POST",
           "request_url": "/tasks",
           "response_body_json": {
-            "description": "Empty title test",
-            "due_date": "2024-07-30",
-            "priority": "Low",
-            "title": "",
-            "user_name": "frank"
+            "error": "Missing required field: title"
           },
-          "response_status_code": 200,
+          "response_status_code": 400,
           "test_setup": {
             "given": "No tasks exist.",
-            "then": "Task is created with empty title field.",
+            "then": "Task creation fails because title is empty.",
             "when": "POST /tasks with empty string for 'title'."
           },
-          "type": "edge"
+          "type": "negative"
         },
         {
           "description": "Create a task with maximum allowed string length for title and description fields (assume 255).",
@@ -1468,9 +1560,64 @@
             "when": "POST /tasks with empty request body."
           },
           "type": "negative"
+        },
+        {
+          "description": "Attempt to create a task with title set to null.",
+          "id": "Create_Task_With_Null_Title",
+          "implementation_id": "backend_endpoint_create_task",
+          "name": "Create Task With Null Title",
+          "request_body_json": {
+            "description": "Null title test",
+            "due_date": "2024-09-01",
+            "priority": "High",
+            "title": null,
+            "user_name": "null_title_user"
+          },
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_method": "POST",
+          "request_url": "/tasks",
+          "response_body_json": {
+            "error": "Missing required field: title"
+          },
+          "response_status_code": 400,
+          "test_setup": {
+            "given": "No tasks exist.",
+            "then": "Task creation fails.",
+            "when": "POST /tasks with null title."
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Attempt to create a task with description set to null.",
+          "id": "Create_Task_With_Null_Description",
+          "implementation_id": "backend_endpoint_create_task",
+          "name": "Create Task With Null Description",
+          "request_body_json": {
+            "description": null,
+            "due_date": "2024-09-02",
+            "priority": "High",
+            "title": "Task with null description",
+            "user_name": "null_desc_user"
+          },
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_method": "POST",
+          "request_url": "/tasks",
+          "response_body_json": {
+            "error": "Missing required field: description"
+          },
+          "response_status_code": 400,
+          "test_setup": {
+            "given": "No tasks exist.",
+            "then": "Task creation fails.",
+            "when": "POST /tasks with null description."
+          },
+          "type": "negative"
         }
-      ],
-      "test_path": ".codevalid/tests/task_5917264832_20260309131657/backend_endpoint_create_task.py"
+      ]
     }
   ]
 }

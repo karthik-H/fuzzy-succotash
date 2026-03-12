@@ -2,7 +2,8 @@
   "task_5917264832_20260309131657": {
     "implementation": [
       {
-        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, due date, and passes data to the parent via onSubmit.",
+        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, due date, and passes data to the parent via onSubmit. Currently does not include a user name field.",
+        "change_type": "unchanged",
         "file_path": "frontend/src/components/TaskForm.tsx",
         "id": "ui_task_form_add_new_task",
         "name": "TaskForm",
@@ -10,7 +11,8 @@
         "type": "component"
       },
       {
-        "How_is_it_connected_to_implementation": "Handles the submission from TaskForm, invokes API to create a new task, reloads task list.",
+        "How_is_it_connected_to_implementation": "Handles submission from TaskForm, invokes API to create a new task, reloads the task list. No user name passed because form does not provide it.",
+        "change_type": "unchanged",
         "file_path": "frontend/src/App.tsx",
         "id": "ui_app_handle_create_task",
         "name": "handleCreateTask",
@@ -18,15 +20,17 @@
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "Sends a POST request to backend /tasks endpoint with task data (title, description, priority, due date, completed).",
+        "How_is_it_connected_to_implementation": "Sends POST request to backend /tasks endpoint with task data (title, description, priority, due date, completed). Does not pass user name.",
+        "change_type": "unchanged",
         "file_path": "frontend/src/api.ts",
         "id": "api_create_task_function",
         "name": "api.createTask",
-        "pseudo_code": "Send POST request to /tasks with task data\nIf response is OK:\n  - Return created task\nElse:\n  - Throw error",
+        "pseudo_code": "Send POST request to /tasks with task data\nIF response is OK:\n  - Return created task\nELSE:\n  - Throw error",
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "FastAPI endpoint for POST /tasks, receives task data, calls database.add_task.",
+        "How_is_it_connected_to_implementation": "FastAPI endpoint for POST /tasks, receives task data and calls database.add_task. No user name field expected or validated.",
+        "change_type": "unchanged",
         "file_path": "backend/main.py",
         "id": "backend_endpoint_create_task",
         "name": "create_task",
@@ -34,7 +38,8 @@
         "type": "endpoint"
       },
       {
-        "How_is_it_connected_to_implementation": "Creates a new Task object with provided fields, assigns unique ID, saves to storage.",
+        "How_is_it_connected_to_implementation": "Creates a new Task object with provided fields, assigns unique ID, saves to storage. User name is not stored.",
+        "change_type": "unchanged",
         "file_path": "backend/database.py",
         "id": "backend_add_task_function",
         "name": "add_task",
@@ -43,7 +48,11 @@
       }
     ],
     "missing_implementations": [
-      "User name field is not present in TaskForm, TaskCreate, API, backend endpoint, or database logic. There is no implementation for associating a user name with a task."
+      "User name field is not collected in the UI form.",
+      "User name is not passed from the frontend to the backend.",
+      "Backend endpoint does not accept or validate user name.",
+      "Database logic does not store user name.",
+      "Validation for missing user name is not implemented as required by acceptance criteria."
     ]
   }
 }
