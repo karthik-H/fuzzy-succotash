@@ -2,12 +2,12 @@
   "task_5917264832_20260309131657": {
     "implementation": [
       {
-        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, and due date. It still does not include a user name field.",
+        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, category, and due date. It does not include a user name field.",
         "change_type": "unchanged",
         "file_path": "frontend/src/components/TaskForm.tsx",
         "id": "ui_task_form_add_new_task",
         "name": "TaskForm",
-        "pseudo_code": "Render a form with fields:\n  - Title (required)\n  - Description\n  - Priority (Low / Medium / High)\n  - Due Date\nOn submit:\n  - Validate required fields\n  - Call onSubmit with task data",
+        "pseudo_code": "Render a form with fields:\n  - Title (required)\n  - Description\n  - Priority (Low / Medium / High)\n  - Category (None / Work / Personal / Study)\n  - Due Date\nOn submit:\n  - Validate required fields\n  - Call onSubmit with task data",
         "type": "component"
       },
       {
@@ -20,7 +20,7 @@
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "Makes POST request to /tasks with title, description, priority, due date, and completed flag. User name is not included.",
+        "How_is_it_connected_to_implementation": "Makes POST request to /tasks with title, description, priority, category, due date, and completed flag. User name is not included.",
         "change_type": "unchanged",
         "file_path": "frontend/src/api.ts",
         "id": "api_create_task_function",
@@ -29,7 +29,7 @@
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "FastAPI POST /tasks endpoint that receives task fields and passes them to database.add_task. User name is not included or validated.",
+        "How_is_it_connected_to_implementation": "FastAPI POST /tasks endpoint that receives task fields via TaskCreate model and passes them to database.add_task. User name is not included or validated.",
         "change_type": "unchanged",
         "file_path": "backend/main.py",
         "id": "backend_endpoint_create_task",
@@ -38,21 +38,18 @@
         "type": "endpoint"
       },
       {
-        "How_is_it_connected_to_implementation": "Creates and persists a new task record. User name is not expected or stored.",
+        "How_is_it_connected_to_implementation": "Creates and persists a new task record to tasks.json. User name is not expected or stored.",
         "change_type": "unchanged",
         "file_path": "backend/database.py",
         "id": "backend_add_task_function",
         "name": "add_task",
-        "pseudo_code": "Read current tasks\nCreate new Task with unique ID and provided fields\nAppend new task to list\nSave list\nReturn new Task",
+        "pseudo_code": "Read current tasks\nCreate new Task with unique ID and provided fields\nAppend new task to list\nSave list to tasks.json\nReturn new Task",
         "type": "function"
       }
     ],
     "missing_implementations": [
-      "User name field is not collected in the UI form.",
-      "User name is not passed from the frontend to the backend.",
-      "Backend endpoint does not accept or validate user name.",
-      "Database logic does not store user name.",
-      "Validation for missing user name is not implemented as required by acceptance criteria."
+      "If any required field (title, description, priority, due date, or user name) is missing or empty, the task creation must fail, and an error must be returned indicating the missing field. Currently, description, due date, and user name are optional in the backend model (TaskBase) and no validation error is returned for missing description or due date. User name field is entirely absent from all layers.",
+      "A task is considered successfully created only if all five fields (title, description, priority, due date, and user name) are present and stored in the system. User name is not collected in the UI form, not passed from the frontend to the backend, not accepted or validated by the backend endpoint, and not stored by the database logic."
     ]
   }
 }
