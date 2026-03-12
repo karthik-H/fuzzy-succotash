@@ -2,54 +2,54 @@
   "task_5917264832_20260309131657": {
     "implementation": [
       {
-        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, category, and due date. It does not include a user name field.",
+        "How_is_it_connected_to_implementation": "UI form for adding a new task, collects title, description, priority, category, and due date. It does not include a user name field. Description and due date are optional with no validation enforcing them as required.",
         "change_type": "unchanged",
         "file_path": "frontend/src/components/TaskForm.tsx",
         "id": "ui_task_form_add_new_task",
         "name": "TaskForm",
-        "pseudo_code": "Render a form with fields:\n  - Title (required)\n  - Description\n  - Priority (Low / Medium / High)\n  - Category (None / Work / Personal / Study)\n  - Due Date\nOn submit:\n  - Validate required fields\n  - Call onSubmit with task data",
+        "pseudo_code": "Render a form with fields:\n  - Title (required, HTML required attribute)\n  - Description (optional textarea)\n  - Priority (Low / Medium / High, default Medium)\n  - Category (None / Work / Personal / Study)\n  - Due Date (optional date input)\nOn submit:\n  - Prevent default form submission\n  - Call onSubmit with task data (description and due_date passed as undefined if empty)\n  - No user name field is collected",
         "type": "component"
       },
       {
-        "How_is_it_connected_to_implementation": "Handles submission from TaskForm and calls the backend API to create a task. Because the form does not collect a user name, none is included here.",
+        "How_is_it_connected_to_implementation": "Handles submission from TaskForm and calls the backend API to create a task. No user name is included in the task data passed to the API. On failure, shows a generic alert without indicating which field is missing.",
         "change_type": "unchanged",
         "file_path": "frontend/src/App.tsx",
         "id": "ui_app_handle_create_task",
         "name": "handleCreateTask",
-        "pseudo_code": "When TaskForm submits:\n  - Call api.createTask with task data (no user name)\n  - Reload tasks from backend\n  - Close the form",
+        "pseudo_code": "When TaskForm submits with taskData:\n  - Call api.createTask with taskData (no user name)\n  - IF success:\n    - Reload tasks from backend\n    - Close the form\n  - IF error:\n    - Show generic alert 'Failed to create task'",
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "Makes POST request to /tasks with title, description, priority, category, due date, and completed flag. User name is not included.",
+        "How_is_it_connected_to_implementation": "Makes POST request to /tasks with title, description, priority, category, due_date, and completed flag. User name is not included in the TaskCreate interface or the request payload.",
         "change_type": "unchanged",
         "file_path": "frontend/src/api.ts",
         "id": "api_create_task_function",
         "name": "api.createTask",
-        "pseudo_code": "Send POST request to /tasks with task data\nIF response is OK:\n  - Return created task\nELSE:\n  - Throw error",
+        "pseudo_code": "Send POST request to /tasks with task data as JSON body\n  - Headers: Content-Type application/json\n  - Body: { title, description, priority, category, due_date, completed } (no user_name)\nIF response is OK:\n  - Return created task as JSON\nELSE:\n  - Throw error 'Failed to create task'",
         "type": "function"
       },
       {
-        "How_is_it_connected_to_implementation": "FastAPI POST /tasks endpoint that receives task fields via TaskCreate model and passes them to database.add_task. User name is not included or validated.",
+        "How_is_it_connected_to_implementation": "FastAPI POST /tasks endpoint that receives task fields via TaskCreate model and passes them to database.add_task. User name is not included or validated. Pydantic validates title as required but description, due_date remain optional with no enforcement.",
         "change_type": "unchanged",
         "file_path": "backend/main.py",
         "id": "backend_endpoint_create_task",
         "name": "create_task",
-        "pseudo_code": "On POST /tasks:\n  - Receive TaskCreate payload\n  - Call database.add_task with provided fields\n  - Return created Task",
+        "pseudo_code": "On POST /tasks:\n  - Receive TaskCreate payload (title required, description/due_date/category optional, no user_name)\n  - Pydantic validates that title is present\n  - Call database.add_task with provided TaskCreate object\n  - Return created Task as response",
         "type": "endpoint"
       },
       {
-        "How_is_it_connected_to_implementation": "Creates and persists a new task record to tasks.json. User name is not expected or stored.",
+        "How_is_it_connected_to_implementation": "Creates and persists a new task record to tasks.json. User name is not expected or stored. Receives TaskCreate model and constructs a Task with a generated UUID; no validation for missing description or due_date is performed.",
         "change_type": "unchanged",
         "file_path": "backend/database.py",
         "id": "backend_add_task_function",
         "name": "add_task",
-        "pseudo_code": "Read current tasks\nCreate new Task with unique ID and provided fields\nAppend new task to list\nSave list to tasks.json\nReturn new Task",
+        "pseudo_code": "Read current tasks from tasks.json\nCreate new Task with:\n  - id: newly generated UUID\n  - All fields from task_create model_dump() (no user_name field present)\nAppend new task to tasks list\nSave updated list back to tasks.json\nReturn new Task",
         "type": "function"
       }
     ],
     "missing_implementations": [
-      "If any required field (title, description, priority, due date, or user name) is missing or empty, the task creation must fail, and an error must be returned indicating the missing field. Currently, description, due date, and user name are optional in the backend model (TaskBase) and no validation error is returned for missing description or due date. User name field is entirely absent from all layers.",
-      "A task is considered successfully created only if all five fields (title, description, priority, due date, and user name) are present and stored in the system. User name is not collected in the UI form, not passed from the frontend to the backend, not accepted or validated by the backend endpoint, and not stored by the database logic."
+      "If any required field (title, description, priority, due date, or user name) is missing or empty, the task creation must fail, and an error must be returned indicating the missing field. Description and due date are optional in the backend TaskBase model and the frontend form; no validation error is returned for missing description or due date, and user name is entirely absent from all layers.",
+      "A task is considered successfully created only if all five fields (title, description, priority, due date, and user name) are present and stored in the system. User name is not collected in the UI form, not included in the TaskCreate interface, not passed from the frontend to the backend, not accepted or validated by the backend endpoint, and not stored by the database logic."
     ]
   }
 }

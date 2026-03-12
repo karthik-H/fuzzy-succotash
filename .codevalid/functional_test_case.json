@@ -1084,17 +1084,16 @@
           "type": "negative"
         },
         {
-          "description": "Submitting the form without a description (if not required) should still call onSubmit with an empty description.",
+          "description": "Submitting the form without a description should not call onSubmit (description is required).",
           "id": "tc_missing_description",
           "implementation_id": "ui_task_form_add_new_task",
-          "name": "submit_missing_description",
+          "name": "submit_missing_description_required",
           "test_setup": {
             "given": "TaskForm is rendered",
-            "then": "onSubmit is called with description as an empty string",
-            "when": "User fills all fields except description and submits the form"
+            "then": "onSubmit is not called",
+            "when": "User fills all fields except description and submits"
           },
-          "type": "edge",
-          "update_reason": "Description is actually required per requirement; expected behavior must change."
+          "type": "negative"
         },
         {
           "description": "Submitting the form without selecting a priority should not call onSubmit (priority is required).",
@@ -1335,6 +1334,54 @@
             "when": "User presses Enter in an input field"
           },
           "type": "positive"
+        },
+        {
+          "description": "The TaskForm must not submit if category is missing (now required by business rules).",
+          "id": "submit_missing_category",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "submit_missing_category",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is not called",
+            "when": "User submits without selecting a category"
+          },
+          "type": "negative"
+        },
+        {
+          "description": "Submitting with category = None should still count as valid.",
+          "id": "submit_with_category_none",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "submit_with_category_none",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit is called with category set to 'None'",
+            "when": "User selects category None and submits"
+          },
+          "type": "edge"
+        },
+        {
+          "description": "Verify category dropdown includes all expected options: None, Work, Personal, Study.",
+          "id": "category_dropdown_options",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "category_dropdown_options",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "Dropdown contains expected category list",
+            "when": "User inspects category dropdown"
+          },
+          "type": "positive"
+        },
+        {
+          "description": "Form should trim leading and trailing whitespace before validation.",
+          "id": "trim_whitespace_on_submit",
+          "implementation_id": "ui_task_form_add_new_task",
+          "name": "trim_whitespace_on_submit",
+          "test_setup": {
+            "given": "TaskForm is rendered",
+            "then": "onSubmit receives trimmed values or form blocks submission if trimming results in empty fields",
+            "when": "User enters values with surrounding spaces and submits"
+          },
+          "type": "edge"
         }
       ]
     }
